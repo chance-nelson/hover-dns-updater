@@ -12,23 +12,25 @@ import requests
 
 class HoverDNS:
     def __init__(self, username, password, dns_id):
-        self.username = username
-        self.password = password
         self.dns_id   = dns_id
+        self.__cookie = self.__login(username, password)
+
+    
+    def __login(self, username, password):
+        login = requests.post('https://www.hover.com/api/login', json={'username': username, 'password': password})
+ 
+        if login.status_code != 200:
+            return None
+       
+        else:
+            return login.cookies
 
 
     def updateDNS(self, ip=None):
         if not ip:
             ip = requests.get('https://api.ipify.org?format=text').text
-
-        login = requests.post('https://www.hover.com/api/login', json={'username': self.username, 'password': self.password})
         
-        if login.status_code != 200:
-            return login
-
-        cookie = login.cookies
-        
-        update = requests.put('https://www.hover.com/api/dns/' + self.dns_id, {'content': ip}, cookies=cookie)
+        update = requests.put('https://www.hover.com/api/dns/' + self.dns_id, {'content': ip}, cookies=self.__cookie)
 
         return update
 
