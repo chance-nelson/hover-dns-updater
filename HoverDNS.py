@@ -41,12 +41,16 @@ def main():
         helpstr += '<args> \n'
         helpstr += 'Update a hover DNS record\'s IP address\n'
         helpstr += '-h, --help   print this help string\n'
-        helpstr += '-i, --ip     manually set an ip'
+        helpstr += '--ip         manually set an ip'
         print(helpstr)
         return
 
+    IP = None
+    if '--ip' in sys.argv:
+        IP = sys.argv[sys.argv.index('--ip') + 1]
+
     hover = HoverDNS(sys.argv[1], sys.argv[2], sys.argv[3])
-    resp  = hover.updateDNS()
+    resp  = hover.updateDNS(IP)
 
     if resp.status_code != 200:
         print("Error:", resp.text)
